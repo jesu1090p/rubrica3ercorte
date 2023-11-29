@@ -1,0 +1,38 @@
+{
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.5",
+    "nodemon": "^3.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./server.js",
+    "dev": "nodemon ./server.js"
+  },
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Manejo de productos y ventas mediante login con jwt",
+  "main": "server.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesu1090p/rubrica3ercorte.git"
+  },
+  "keywords": [
+    "manejo",
+    "de",
+    "usuarios",
+    "productos",
+    "ventas"
+  ],
+  "author": "Jesus Oviedo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jesu1090p/rubrica3ercorte/issues"
+  },
+  "homepage": "https://github.com/jesu1090p/rubrica3ercorte#readme"
+}

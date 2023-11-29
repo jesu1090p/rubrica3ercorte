@@ -1,0 +1,54 @@
+:root {
+    --eucalyptus-50: rgb(240, 253, 246);
+    --eucalyptus-100: rgb(221, 251, 236);
+    --eucalyptus-200: rgb(188, 246, 217);
+    --eucalyptus-300: rgb(136, 237, 189);
+    --eucalyptus-400: rgb(77, 219, 152);
+    --eucalyptus-500: rgb(37, 194, 121);
+    --eucalyptus-600: rgb(25, 160, 97);
+    --eucalyptus-700: rgb(25, 135, 84);
+    --eucalyptus-800: rgb(24, 99, 64);
+    --eucalyptus-900: rgb(21, 82, 55);
+    --eucalyptus-950: rgb(6, 45, 28);
+    --malibu-50: #f0f8ff;
+    --malibu-100: #e0f0fe;
+    --malibu-200: #bbe3fc;
+    --malibu-300: #5fbff9;
+    --malibu-400: #3bb2f5;
+    --malibu-500: #1199e6;
+    --malibu-600: #0579c4;
+    --malibu-700: #05609f;
+    --malibu-800: #095183;
+    --malibu-900: #0d456d;
+    --malibu-950: #092c48;    
+  }
+
+  .gradient-background {
+    background: linear-gradient(
+      to bottom,
+      var(--malibu-100),
+      var(--malibu-400)
+    );
+    color: var(--malibu-800);
+  }
+
+  .gradient-background-1 {
+    background: linear-gradient(
+      to bottom,
+      var(--eucalyptus-500),
+      var(--eucalyptus-200)
+    );
+    color: var(--eucalyptus-900);
+  }
+  .gradient-background-2 {
+    background: linear-gradient(
+      to bottom,
+      var(--eucalyptus-800),
+      var(--eucalyptus-500)
+    );
+    color: var(--eucalyptus-300); 
+  }
+
+  h1,h2 {
+    font-family: 'Sora', sans-serif;
+  }
