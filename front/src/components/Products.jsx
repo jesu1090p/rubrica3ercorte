@@ -40,11 +40,52 @@ const Product = () => {
       console.error('Error al obtener productos:', error);
     }
   };
+  const isAuthenticated = () => {
+    // Verifica si existe un token en las cookies
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    return !!token;
+  };
+
+  const handleAddProduct = () => {
+    // Verifica si el usuario está autenticado antes de mostrar el modal
+    if (isAuthenticated()) {
+      setShowAddModal(true);
+    } else {
+      toast.error('Debes iniciar sesión para realizar esta acción.', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2000,
+        pauseOnHover: false,
+      });
+    }
+  };
+
+  const handleEditProduct = (product) => {
+    // Verifica si el usuario está autenticado antes de permitir la edición
+    if (isAuthenticated()) {
+      setEditingProduct(product);
+    } else {
+      toast.error('Debes iniciar sesión para realizar esta acción.', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2000,
+        pauseOnHover: false,
+      });
+    }
+  };
+
+  const handleDeleteProduct = (product) => {
+    // Verifica si el usuario está autenticado antes de permitir la eliminación
+    if (isAuthenticated()) {
+      setDeletingProduct(product);
+    } else {
+      toast.error('Debes iniciar sesión para realizar esta acción.', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2000,
+        pauseOnHover: false,
+      });
+    }
+  };
 
   //Crear producto
-  const handleAddProduct = async () => {
-    setShowAddModal(true);
-  };
 
   const handleSaveNewProduct = async () => {
     if (!newProduct.nombre || !newProduct.descripcion) {
@@ -90,9 +131,6 @@ const Product = () => {
   };
 
 //Editar producto
-  const handleEditProduct = (product) => {
-    setEditingProduct(product);
-  };
 
   const handleSaveEdit = async (editedProduct) => {
     if (!editedProduct.nombre || !editedProduct.descripcion) {
@@ -134,10 +172,6 @@ const Product = () => {
     setEditingProduct(null);
   };
 
-  const handleDeleteProduct = (product) => {
-    setDeletingProduct(product);
-  };
-
   const handleConfirmDelete = async () => {
     try {
       await axios.delete(`http://localhost:3000/products/${deletingProduct.id}`);
@@ -163,7 +197,7 @@ const Product = () => {
   return (    
       <div className='text-center'>
         <h2 className='my-5'>Listado de Productos</h2>
-        <Button className='py-2 my-3' onClick={handleAddProduct}>Agregar Producto</Button>
+        <Button variant={isAuthenticated() ? "primary" : "secondary"} className='py-2 my-3' onClick={handleAddProduct}>Agregar Producto</Button>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -184,10 +218,10 @@ const Product = () => {
                 <td>${product.precio}</td>
                 <td>{product.cantidad}</td>
                 <td>                   
-                    <Button className="mx-2" variant="primary" onClick={() => handleEditProduct(product)}>
+                    <Button className="mx-2" variant={isAuthenticated() ? "primary" : "secondary"} onClick={() => handleEditProduct(product)}>
                     Editar
                   </Button>
-                  <Button  className="mx-2" variant="danger" onClick={() => handleDeleteProduct(product)}>
+                  <Button  className="mx-2" variant={isAuthenticated() ? "danger" : "secondary"} onClick={() => handleDeleteProduct(product)}>
                     Eliminar
                   </Button>                   
                 </td>

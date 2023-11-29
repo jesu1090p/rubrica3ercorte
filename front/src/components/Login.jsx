@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Col, Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const [usuario, setUsuario] = useState('');
@@ -10,7 +11,7 @@ const Login = () => {
 
   useEffect(() => {
     // Verificar si hay un token almacenado al cargar la página
-    const storedToken = localStorage.getItem('jwt');
+    const storedToken = Cookies.get('jwt');
     if (storedToken) {
       // Redirigir al usuario según su rol
       navigate('/dashboard'); // Cambia '/dashboard' por la ruta adecuada
@@ -44,8 +45,8 @@ const Login = () => {
       // Obtener el rol del usuario desde la respuesta del servidor
       const { rol, token } = await response.json();
 
-      // Almacenar el token en el almacenamiento local
-      localStorage.setItem('jwt', token);
+      // Almacenamos el token en una cookie
+      Cookies.set('jwt', token, { expires: 0.25 }); // La cookie expira en 6 horas
 
       toast.success(`Inicio de sesión exitoso!`, {
         position: toast.POSITION.TOP_CENTER,
@@ -54,18 +55,15 @@ const Login = () => {
         progress: undefined
       });
 
-       // Redirigir según el rol del usuario
-       setTimeout(() => {
-        // Redirigir según el rol del usuario
+      // Redirigir según el rol del usuario
+      setTimeout(() => {
         if (rol === 'admin') {
           navigate('/products');
         } else if (rol === 'solicitante') {
           navigate('/sales');
-        } else {
-          // Manejar otros roles o casos según sea necesario
-          console.error('Rol no reconocido:', rol);
         }
       }, 1000);
+
 
     } catch (error) {
       console.error('Error al realizar la solicitud:', error);
