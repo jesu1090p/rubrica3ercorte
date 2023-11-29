@@ -1,19 +1,26 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import db from './db.js'
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
-import cors from 'cors';
-import { promisePool } from './db.js';
+import cors from 'cors'
+
 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:5173'); 
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
 app.use(cors({
-    origin: 'http://localhost:5173', 
-    credentials: true,
-  }));
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+}))
 
 app.get('/', (req, res) => {
     res.json({message: 'API de manejo de productos y ventas'});
@@ -27,64 +34,26 @@ function generateToken(usuario) {
 // Rutas
 // Consulta todos los productos
 app.get('/products', async (req, res) => {
-    try {
-      const [productos] = await promisePool.query('SELECT * FROM productos');
-  
-      if (productos.length === 0) {
-        return res.json({ message: 'No hay productos disponibles en la base de datos.' });
-      }
-  
-      res.json(productos);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error al obtener los productos.' });
-    }
-  });
-
-  // Crea un nuevo producto
-app.post('/products', async (req, res) => {
-  const nuevoProducto = req.body;
   try {
-    // Insertar el nuevo producto en la base de datos
-    await promisePool.query('INSERT INTO productos SET ?', [nuevoProducto]);
-    res.json({ mensaje: 'Producto creado exitosamente.' });
+    const [productos] = await db.promise.query('SELECT * FROM productos');
+
+    if (productos.length === 0) {
+      return res.json({ message: 'No hay productos disponibles en la base de datos.' });
+    }
+
+    res.json(productos);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al crear el producto.' });
+    res.status(500).json({ error: 'Error al obtener los productos.' });
   }
 });
 
-//Editar producto
-app.patch('/products/:id', async (req, res) => {
-  const { id } = req.params;
-    const updatedProductData = req.body;
 
-    try {
-      await promisePool.query('UPDATE productos SET ? WHERE id = ?', [updatedProductData, id]);
-
-      res.json({ message: 'Producto actualizado exitosamente.' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error al actualizar el producto.' });
-    }
-});
-
-// Elimina un producto por código
-app.delete('/products/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    await promisePool.query('DELETE FROM productos WHERE id = ?', [id]);
-    res.json({ mensaje: 'Producto eliminado exitosamente.' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al eliminar el producto.' });
-  }
-});
-
+  
   // Consulta todas las ventas
   app.get('/sales', async (req, res) => {
     try {
-      const ventas = await promisePool.query('SELECT * FROM ventas');
+      const ventas = await db.query('SELECT * FROM ventas');
       
       if (ventas.length === 0) {
         return res.json({ message: 'No hay ventas disponibles en la base de datos.' });
@@ -97,20 +66,54 @@ app.delete('/products/:id', async (req, res) => {
     }
   });
 
-
-
 // Consulta un producto por código
 app.get('/products/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await promisePool.query('SELECT * FROM productos WHERE id = ?', [id]);
-    res.json(rows);
+    const producto = await db.query('SELECT * FROM productos WHERE id = ?', [id]);
+    res.json(producto);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al obtener el producto.' });
   }
 });
 
+// Crea un nuevo producto
+app.post('/products', async (req, res) => {
+  const nuevoProducto = req.body;
+  try {
+    await db.query('INSERT INTO productos SET ?', [nuevoProducto]);
+    res.json({ mensaje: 'Producto creado exitosamente.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al crear el producto.' });
+  }
+});
+
+// Actualiza un producto por código
+app.patch('/products/:id', async (req, res) => {
+  const { id } = req.params;
+  const productosActualizados = req.body;
+  try {
+    await db.query('UPDATE productos SET ? WHERE id = ?', [productosActualizados, id]);
+    res.json({ mensaje: 'Producto actualizado exitosamente.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al actualizar el producto.' });
+  }
+});
+
+// Elimina un producto por código
+app.delete('/products/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.promise.query('DELETE FROM productos WHERE id = ?', [id]);
+    res.json({ mensaje: 'Producto eliminado exitosamente.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al eliminar el producto.', error });
+  }
+});
 
 
 // Rutas para Ventas
@@ -123,7 +126,7 @@ app.post('/registro', async (req, res) => {
     try {
       // Lógica para registrar un nuevo usuario en la base de datos
       const newUser = req.body;
-      await promisePool.query('INSERT INTO usuarios SET ?', [newUser]);
+      await db.promise.query('INSERT INTO usuarios SET ?', [newUser]);
       
       // Lógica para autenticar al usuario y generar el token
       const token = generateToken(newUser.usuario);
@@ -198,7 +201,7 @@ app.post('/registro', async (req, res) => {
   async function getUserByCredentials(usuario, clave, rol) {
     try {
       // Realizar la consulta a la base de datos
-      const [rows] = await promisePool.query('SELECT * FROM usuarios WHERE usuario = ? AND clave = ?', [usuario, clave]);
+      const [rows] = await db.promise.query('SELECT * FROM usuarios WHERE usuario = ? AND clave = ?', [usuario, clave]);
   
       // Si hay un usuario que coincide con las credenciales, devolverlo
       if (rows.length > 0) {
@@ -214,7 +217,7 @@ app.post('/registro', async (req, res) => {
 
   async function createUser(newUser) {
     try {
-      await promisePool.query('INSERT INTO usuarios SET ?', [newUser]);
+      await db.promise.query('INSERT INTO usuarios SET ?', [newUser]);
     } catch (error) {
       throw error;
     }
@@ -228,4 +231,3 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`Servidor escuchando en el puerto ${port}`);
 });
-  

@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Container, Col, Form, Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const [usuario, setUsuario] = useState('');
   const [clave, setClave] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Verificar si hay un token almacenado al cargar la página
+    const storedToken = localStorage.getItem('jwt');
+    if (storedToken) {
+      // Redirigir al usuario según su rol
+      navigate('/dashboard'); // Cambia '/dashboard' por la ruta adecuada
+    }
+  }, [navigate]);
 
   const handleLogin = async () => {
     try {
@@ -21,21 +32,40 @@ const Login = () => {
         // Manejar el caso en que la autenticación no fue exitosa
         const { error } = await response.json();
         console.error('Error en la autenticación:', error);
+        toast.error(`Usuario o clave incorrectos!`, {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 1500,
+          pauseOnHover: false,
+          progress: false
+        });
         return;
       }
 
       // Obtener el rol del usuario desde la respuesta del servidor
-      const { rol } = await response.json();
+      const { rol, token } = await response.json();
 
-      // Redirigir según el rol del usuario
-      if (rol === 'admin') {
-        navigate('/products');
-      } else if (rol === 'solicitante') {
-        navigate('/sales');
-      } else {
-        // Manejar otros roles o casos según sea necesario
-        console.error('Rol no reconocido:', rol);
-      }
+      // Almacenar el token en el almacenamiento local
+      localStorage.setItem('jwt', token);
+
+      toast.success(`Inicio de sesión exitoso!`, {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2000,
+        pauseOnHover: false,
+        progress: undefined
+      });
+
+       // Redirigir según el rol del usuario
+       setTimeout(() => {
+        // Redirigir según el rol del usuario
+        if (rol === 'admin') {
+          navigate('/products');
+        } else if (rol === 'solicitante') {
+          navigate('/sales');
+        } else {
+          // Manejar otros roles o casos según sea necesario
+          console.error('Rol no reconocido:', rol);
+        }
+      }, 1000);
 
     } catch (error) {
       console.error('Error al realizar la solicitud:', error);
@@ -43,20 +73,27 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <label>
-        Usuario:
-        <input type="text" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
-      </label>
-      <br />
-      <label>
-        Contraseña:
-        <input type="password" value={clave} onChange={(e) => setClave(e.target.value)} />
-      </label>
-      <br />
-      <button onClick={handleLogin}>Iniciar sesión</button>
-    </div>
+    <Container className="mt-5">
+      <Col md={{ span: 6, offset: 3 }}>
+        <h2 className="text-center mb-4">Login</h2>
+
+        <Form>
+          <Form.Group className="mb-3">
+            <Form.Label>Usuario:</Form.Label>
+            <Form.Control type="text" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Contraseña:</Form.Label>
+            <Form.Control type="password" value={clave} onChange={(e) => setClave(e.target.value)} />
+          </Form.Group>
+
+          <Button variant="primary" onClick={handleLogin}>
+            Iniciar sesión
+          </Button>
+        </Form>
+      </Col>
+    </Container>
   );
 };
 

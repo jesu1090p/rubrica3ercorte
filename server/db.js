@@ -1,17 +1,13 @@
 import mysql from 'mysql2';
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'web2',
-  });
-  
-  db.connect((err) => {
-    if (err) {
-      console.log('Error al conectar a la base de datos:', err);
-    } else {
-      console.log('Conexión exitosa a la base de datos');
-    }
-  });
+  host: 'localhost',
+  user: 'root',
+  database: 'web2',
+});
 
-  export default db;
+// Configura las funciones de promesa para db
+const promisePool = db.promise();
+
+// Exporta both connection and promise pool
+export { db, promisePool };
