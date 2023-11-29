@@ -154,7 +154,7 @@ app.post('/registro', async (req, res) => {
   
   // Rutas para Registro y Autenticación de Usuarios
 
-app.post('/login', async (req, res) => {
+  app.post('/login', async (req, res) => {
     try {
       // Extraer credenciales del cuerpo de la solicitud
       const { usuario, clave } = req.body;
@@ -173,14 +173,14 @@ app.post('/login', async (req, res) => {
       // Almacenar el token en una cookie
       res.cookie('jwt', token, { httpOnly: true });
   
-      res.json({ message: 'Usuario autenticado exitosamente', token });
+      // Devolver el rol del usuario en la respuesta
+      res.json({ message: 'Usuario autenticado exitosamente', token, rol: user.rol });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Error al autenticar al usuario.' });
     }
   });
-  
-  app.post('/registro', async (req, res) => {
+    app.post('/registro', async (req, res) => {
     try {
       // Extraer los datos del cuerpo de la solicitud
       const { usuario, contraseña, rol } = req.body;
@@ -209,10 +209,10 @@ app.post('/login', async (req, res) => {
   });
 
   // Función para obtener un usuario por credenciales desde la base de datos
-  async function getUserByCredentials(usuario, contraseña) {
+  async function getUserByCredentials(usuario, clave, rol) {
     try {
       // Realizar la consulta a la base de datos
-      const [rows] = await db.promise().query('SELECT * FROM usuarios WHERE usuario = ? AND contraseña = ?', [usuario, contraseña]);
+      const [rows] = await db.promise().query('SELECT * FROM usuarios WHERE usuario = ? AND clave = ?', [usuario, clave]);
   
       // Si hay un usuario que coincide con las credenciales, devolverlo
       if (rows.length > 0) {
