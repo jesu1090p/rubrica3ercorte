@@ -24,8 +24,6 @@ function generateToken(usuario) {
     return token;
   }
 
-
-
   async function getUserByCredentials(usuario, clave) {
     try {
       // Realizar la consulta a la base de datos
@@ -97,6 +95,21 @@ app.post('/products', async (req, res) => {
   }
 });
 
+
+// Consulta un producto por código
+app.get('/products/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await promisePool.query('SELECT * FROM productos WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'No se encontró ningun producto con el código proporcionado.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener producto.' });
+  }
+});
+
 //Editar producto
 app.patch('/products/:id', async (req, res) => {
   const { id } = req.params;
@@ -124,36 +137,97 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
-  // Consulta todas las ventas
-  app.get('/sales', async (req, res) => {
-    try {
-      const ventas = await promisePool.query('SELECT * FROM ventas');
-      
-      if (ventas.length === 0) {
-        return res.json({ message: 'No hay ventas disponibles en la base de datos.' });
-      }
-  
-      res.json(ventas);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error al obtener las ventas.' });
-    }
-  });
-
-
-
-// Consulta un producto por código
-app.get('/products/:id', async (req, res) => {
-  const { id } = req.params;
+//Obtener todas las ventas
+app.get('/sales', async (req, res) => {
   try {
-    const [rows] = await promisePool.query('SELECT * FROM productos WHERE id = ?', [id]);
-    res.json(rows);
+    const [ventas] = await promisePool.query('SELECT * FROM ventas');
+
+    if (ventas.length === 0) {
+      return res.json({ message: 'No hay ventas disponibles en la base de datos.' });
+    }
+
+    const formattedVentas = ventas.map((venta) => ({
+      ...venta,
+      fecha: new Date(venta.fecha).toLocaleDateString('es-CO'), 
+    }));
+
+    res.json(formattedVentas);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al obtener el producto.' });
+    res.status(500).json({ error: 'Error al obtener las ventas.' });
   }
 });
 
+// Consulta venta por código
+app.get('/sales/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await promisePool.query('SELECT * FROM ventas WHERE id = ?', [id]);
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'No se encontró ninguna venta con el código proporcionado.' });
+    }
+
+    const formattedVenta = {
+      ...rows[0],
+      fecha: new Date(rows[0].fecha).toLocaleDateString('es-ES'),
+    };
+
+    res.json(formattedVenta);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener venta.' });
+  }
+});
+
+ // Crea unanueva venta
+ app.post('/sales', async (req, res) => {
+  const nuevaVenta = req.body;
+
+  try {
+    // Verificar si el producto con el codigo_producto existe
+    const [productRows] = await promisePool.query('SELECT * FROM productos WHERE id = ?', [nuevaVenta.codigo_producto]);
+
+    if (productRows.length === 0) {
+      // Si el producto no existe, enviar un mensaje de error al cliente
+      return res.status(400).json({ error: 'El producto no existe.' });
+    }
+
+    await promisePool.query('INSERT INTO ventas SET ?', [nuevaVenta]);
+    res.json({ mensaje: 'Venta creada exitosamente.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al guardar.' });
+    res.status(400).json({ error: 'Producto con el condigo ingresado no existe. Un admin debe crearlo' });
+  }
+});
+
+//Editar producto
+app.patch('/sales/:id', async (req, res) => {
+  const { id } = req.params;
+    const updatedSalesData = req.body;
+
+    try {
+      await promisePool.query('UPDATE ventas SET ? WHERE id = ?', [updatedSalesData, id]);
+
+      res.json({ message: 'Venta actualizada exitosamente.' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al actualizar venta.' });
+    }
+});
+
+// Elimina venta por código
+app.delete('/sales/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await promisePool.query('DELETE FROM ventas WHERE id = ?', [id]);
+    res.json({ mensaje: 'Venta eliminada exitosamente.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al eliminar venta.' });
+  }
+});
 
 app.post('/register', async (req, res) => {
     try {
@@ -208,7 +282,7 @@ app.post('/register', async (req, res) => {
   app.post('/logout', (req, res) => {
    
     res.clearCookie('jwt');  
-    res.json({ message: 'Logout exitoso' });
+    res.json({ message: 'Cierre de sesion exitoso' });
   });
 
   app.post('/registro', async (req, res) => {
@@ -248,6 +322,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`Servidor escuchando en el puerto ${port}`);
+  console.log(`Servidor conectado al puerto ${port}`);
 });
   

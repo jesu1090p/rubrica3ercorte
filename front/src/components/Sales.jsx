@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import AddModal from './modals/AddModalProduct';
-import EditModal from './modals/EditModalProduct';
-import DeleteModal from './modals/DeleteModalProduct';
+import AddModal from './modals/AddModalSales';
+import EditModal from './modals/EditModalSales';
+import DeleteModal from './modals/DeleteModalSales';
 import { Button, Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
@@ -49,7 +49,7 @@ const Sales = () => {
     if (isAuthenticated()) {
       setShowAddModal(true);
     } else {
-      toast.error('Debes iniciar sesión como "Admin" para realizar esta acción.', {
+      toast.error('Debes iniciar sesión como "Solicitante" para realizar esta acción.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,
@@ -61,7 +61,7 @@ const Sales = () => {
     if (isAuthenticated()) {
       setEditingSale(sale);
     } else {
-      toast.error('Debes iniciar sesión como "Admin" para realizar esta acción.', {
+      toast.error('Debes iniciar sesión como "Solicitante" para realizar esta acción.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,
@@ -73,7 +73,7 @@ const Sales = () => {
     if (isAuthenticated()) {
       setDeletingSale(sale);
     } else {
-      toast.error('Debes iniciar sesión como "Admin" para realizar esta acción.', {
+      toast.error('Debes iniciar sesión como "Solicitante" para realizar esta acción.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,
@@ -81,6 +81,7 @@ const Sales = () => {
     }
   };
 
+ 
   const handleSaveNewSale = async () => {
     if (!newSale.codigo_producto || !newSale.nombre || !newSale.telefono || !newSale.fecha || newSale.cantidad <= 0) {
       toast.error("Asegúrate de completar todos los campos y que la cantidad sea mayor que 0.", {
@@ -90,11 +91,11 @@ const Sales = () => {
       });
       return;
     }
-
+  
     try {
       const response = await axios.post('http://localhost:3000/sales', newSale);
       const saleAdded = response.data;
-
+  
       setSales([...sales, saleAdded]);
       setNewSale({
         codigo_producto: '',
@@ -103,7 +104,7 @@ const Sales = () => {
         fecha: '',
         cantidad: 0,
       });
-
+  
       setShowAddModal(false);
       fetchSales();
       toast.success("Venta guardada con éxito!", {
@@ -113,6 +114,21 @@ const Sales = () => {
       });
     } catch (error) {
       console.error('Error al agregar una nueva venta:', error);
+  
+      if (error.response && error.response.status === 400) {
+       
+        toast.error("El producto no existe. Un Admin debe agregar el codigo del producto para proceder. ", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2000,
+          pauseOnHover: false,
+        });
+      } else {
+        toast.error("Error al agregar una nueva venta.", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2000,
+          pauseOnHover: false,
+        });
+      }
     }
   };
 
@@ -231,3 +247,4 @@ const Sales = () => {
 };
 
 export default Sales;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
