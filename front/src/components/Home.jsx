@@ -8,7 +8,7 @@ const Home = () => {
     <div className="py-4">  
       <div className="p-5 mb-4 gradient-background rounded-3">
         <div className="container py-5">
-          <h1 className="display-5 fw-bold">Bienvenido a la Gestión de Productos y Ventas</h1>
+          <h1 className="sora">Bienvenido a la Gestión de Productos y Ventas</h1>
           <p className="col-md-8 fs-4">Este es un espacio dedicado para el manejo de productos y ventas en GestionARTE.
           Puedes comenzar explorando las diferentes secciones y funcionalidades.</p>
         </div>

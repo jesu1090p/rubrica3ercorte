@@ -51,7 +51,7 @@ const Product = () => {
     if (isAuthenticated()) {
       setShowAddModal(true);
     } else {
-      toast.error('Debes iniciar sesión para realizar esta acción.', {
+      toast.error('Debes iniciar sesión como "Admin" para realizar esta acción.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,
@@ -64,7 +64,7 @@ const Product = () => {
     if (isAuthenticated()) {
       setEditingProduct(product);
     } else {
-      toast.error('Debes iniciar sesión para realizar esta acción.', {
+      toast.error('Debes iniciar sesión para como "Admin" realizar esta acción.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,
@@ -77,7 +77,7 @@ const Product = () => {
     if (isAuthenticated()) {
       setDeletingProduct(product);
     } else {
-      toast.error('Debes iniciar sesión para realizar esta acción.', {
+      toast.error('Debes iniciar sesión como "Admin" para realizar esta acción.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,

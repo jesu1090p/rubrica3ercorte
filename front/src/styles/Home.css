@@ -49,6 +49,11 @@
     color: var(--eucalyptus-300); 
   }
 
-  h1,h2 {
+  h1, h2 {
     font-family: 'Sora', sans-serif;
+  }
+
+  .sora {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
   }
