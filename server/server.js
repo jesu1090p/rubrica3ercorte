@@ -24,6 +24,49 @@ function generateToken(usuario) {
     return token;
   }
 
+
+
+  async function getUserByCredentials(usuario, clave) {
+    try {
+      // Realizar la consulta a la base de datos
+      const [rows] = await promisePool.query('SELECT * FROM usuarios WHERE usuario = ? AND clave = ?', [usuario, clave]);
+  
+      // Si hay un usuario que coincide con las credenciales, devolverlo
+      if (rows.length > 0) {
+        return rows[0];
+      }
+  
+      // Si no se encuentra un usuario, devolver null
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async function getUserByUsername(usuario) {
+    try {
+      // Realizar la consulta a la base de datos
+      const [rows] = await promisePool.query('SELECT * FROM usuarios WHERE usuario = ?', [usuario]);
+  
+      // Si hay un usuario que coincide con el nombre de usuario, devolverlo
+      if (rows.length > 0) {
+        return rows[0];
+      }
+  
+      // Si no se encuentra un usuario, devolver null
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async function createUser(newUser) {
+    try {
+      await promisePool.query('INSERT INTO usuarios SET ?', [newUser]);
+    } catch (error) {
+      throw error;
+    }
+  }
 // Rutas
 // Consulta todos los productos
 app.get('/products', async (req, res) => {
@@ -112,14 +155,7 @@ app.get('/products/:id', async (req, res) => {
 });
 
 
-
-// Rutas para Ventas
-
-// Resto de rutas para Ventas (similar a las de Productos)
-
-
-
-app.post('/registro', async (req, res) => {
+app.post('/register', async (req, res) => {
     try {
       // Lógica para registrar un nuevo usuario en la base de datos
       const newUser = req.body;
@@ -166,19 +202,31 @@ app.post('/registro', async (req, res) => {
       res.status(500).json({ error: 'Error al autenticar al usuario.' });
     }
   });
-    app.post('/registro', async (req, res) => {
+
+  app.post('/logout', (req, res) => {
+   
+    res.clearCookie('jwt');
+  
+   
+    localStorage.removeItem('jwt');
+  
+    res.json({ message: 'Logout exitoso' });
+  });
+
+  app.post('/registro', async (req, res) => {
     try {
       // Extraer los datos del cuerpo de la solicitud
-      const { usuario, contraseña, rol } = req.body;
+      const { nombre, usuario, clave, rol } = req.body;
   
       // Validar si el usuario ya existe en la base de datos
       const existingUser = await getUserByUsername(usuario);
       if (existingUser) {
-        return res.status(400).json({ error: 'El usuario ya existe.' });
+        // El usuario ya está registrado, enviar un toast de advertencia
+        return res.status(400).json({ warning: 'El usuario ya está registrado.' });
       }
   
       // Si el usuario no existe, registrarlo en la base de datos
-      const newUser = { usuario, contraseña, rol };
+      const newUser = { nombre, usuario, clave, rol };
       await createUser(newUser);
   
       // Generar un token para el nuevo usuario
@@ -194,31 +242,7 @@ app.post('/registro', async (req, res) => {
     }
   });
 
-  // Función para obtener un usuario por credenciales desde la base de datos
-  async function getUserByCredentials(usuario, clave, rol) {
-    try {
-      // Realizar la consulta a la base de datos
-      const [rows] = await promisePool.query('SELECT * FROM usuarios WHERE usuario = ? AND clave = ?', [usuario, clave]);
-  
-      // Si hay un usuario que coincide con las credenciales, devolverlo
-      if (rows.length > 0) {
-        return rows[0];
-      }
-  
-      // Si no se encuentra un usuario, devolver null
-      return null;
-    } catch (error) {
-      throw error;
-    }
-  }  
 
-  async function createUser(newUser) {
-    try {
-      await promisePool.query('INSERT INTO usuarios SET ?', [newUser]);
-    } catch (error) {
-      throw error;
-    }
-  }
 // Manejo de errores de conexión a la base de datos
 app.use((err, req, res, next) => {
   console.error(err.stack);

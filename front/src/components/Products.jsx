@@ -52,7 +52,7 @@ const Product = () => {
       setShowAddModal(true);
     } else {
       toast.error('Debes iniciar sesión para realizar esta acción.', {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,
       });
@@ -65,7 +65,7 @@ const Product = () => {
       setEditingProduct(product);
     } else {
       toast.error('Debes iniciar sesión para realizar esta acción.', {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,
       });
@@ -78,7 +78,7 @@ const Product = () => {
       setDeletingProduct(product);
     } else {
       toast.error('Debes iniciar sesión para realizar esta acción.', {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false,
       });
@@ -90,7 +90,7 @@ const Product = () => {
   const handleSaveNewProduct = async () => {
     if (!newProduct.nombre || !newProduct.descripcion) {
       toast.error("No pueden existir campos vacios.", {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 1000,
         pauseOnHover: false,
       });
@@ -99,7 +99,7 @@ const Product = () => {
 
     if (newProduct.precio <= 0 || newProduct.cantidad <= 0) {
       toast.error("Asegúrate de que el precio y la cantidad sean mayores que 0.", {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 1000,
         pauseOnHover: false,
       });
@@ -121,7 +121,7 @@ const Product = () => {
       setShowAddModal(false); 
       fetchProducts();
       toast.success("Producto guardado con exito!", {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 1800,
         pauseOnHover: false
       });
@@ -135,7 +135,7 @@ const Product = () => {
   const handleSaveEdit = async (editedProduct) => {
     if (!editedProduct.nombre || !editedProduct.descripcion) {
       toast.error("No pueden existir campos vacios.", {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 1000,
         pauseOnHover: false,
       });
@@ -144,7 +144,7 @@ const Product = () => {
 
     if (editedProduct.precio <= 0 || editedProduct.cantidad <= 0) {
       toast.error("Asegúrate de que el precio y la cantidad sean mayores que 0.", {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 1000,
         pauseOnHover: false,
       });
@@ -158,7 +158,7 @@ const Product = () => {
         producto.id === editedProduct.id ? editedProduct : producto
       );
       toast.warning('Producto actualizado con exito!', {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 1000,
         pauseOnHover: false,
       })
@@ -181,7 +181,7 @@ const Product = () => {
            
       setProducts(productosActualizados);
       toast.error(`Producto eliminado de la base de datos!`, {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
         pauseOnHover: false
       });
@@ -197,7 +197,7 @@ const Product = () => {
   return (    
       <div className='text-center'>
         <h2 className='my-5'>Listado de Productos</h2>
-        <Button variant={isAuthenticated() ? "primary" : "secondary"} className='py-2 my-3' onClick={handleAddProduct}>Agregar Producto</Button>
+        <Button variant={isAuthenticated() ? "primary" : "secondary"} className={`py-2 my-3 ${isAuthenticated() ? "" : "disabled"}`} onClick={handleAddProduct}>Agregar Producto</Button>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -218,7 +218,7 @@ const Product = () => {
                 <td>${product.precio}</td>
                 <td>{product.cantidad}</td>
                 <td>                   
-                    <Button className="mx-2" variant={isAuthenticated() ? "primary" : "secondary"} onClick={() => handleEditProduct(product)}>
+                    <Button className={`mx-2 ${isAuthenticated() ? "" : "disabled"}`} variant={isAuthenticated() ? "primary" : "secondary"} onClick={() => handleEditProduct(product)}>
                     Editar
                   </Button>
                   <Button  className="mx-2" variant={isAuthenticated() ? "danger" : "secondary"} onClick={() => handleDeleteProduct(product)}>

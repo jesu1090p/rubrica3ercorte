@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Container, Col, Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
@@ -8,15 +8,6 @@ const Login = () => {
   const [usuario, setUsuario] = useState('');
   const [clave, setClave] = useState('');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Verificar si hay un token almacenado al cargar la página
-    const storedToken = Cookies.get('jwt');
-    if (storedToken) {
-      // Redirigir al usuario según su rol
-      navigate('/dashboard'); // Cambia '/dashboard' por la ruta adecuada
-    }
-  }, [navigate]);
 
   const handleLogin = async () => {
     try {
@@ -34,7 +25,7 @@ const Login = () => {
         const { error } = await response.json();
         console.error('Error en la autenticación:', error);
         toast.error(`Usuario o clave incorrectos!`, {
-          position: toast.POSITION.TOP_CENTER,
+          position: toast.POSITION.BOTTOM_CENTER,
           autoClose: 1500,
           pauseOnHover: false,
           progress: false
@@ -49,7 +40,7 @@ const Login = () => {
       Cookies.set('jwt', token, { expires: 0.25 }); // La cookie expira en 6 horas
 
       toast.success(`Inicio de sesión exitoso!`, {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.BOTTOM_CENTER,
         autoClose: 2000,
         pauseOnHover: false,
         progress: undefined
@@ -71,11 +62,11 @@ const Login = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Col md={{ span: 6, offset: 3 }}>
-        <h2 className="text-center mb-4">Login</h2>
+        <Container className="mt-5">
+    <Col md={{ span: 4, offset: 4 }}>
+        <h2 className="text-center mb-4">Inicio de sesi&oacute;n</h2>
 
-        <Form>
+        <Form className='bg-gradient bg-secondary-subtle border rounded p-3'>
           <Form.Group className="mb-3">
             <Form.Label>Usuario:</Form.Label>
             <Form.Control type="text" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
@@ -85,10 +76,12 @@ const Login = () => {
             <Form.Label>Contraseña:</Form.Label>
             <Form.Control type="password" value={clave} onChange={(e) => setClave(e.target.value)} />
           </Form.Group>
-
+          <div className="text-center">
           <Button variant="primary" onClick={handleLogin}>
             Iniciar sesión
           </Button>
+          <p className='small mt-3'>No tienes cuenta? <Link to={'/register'}>Reg&iacute;strate</Link></p>
+          </div>
         </Form>
       </Col>
     </Container>
