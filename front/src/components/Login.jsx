@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container, Col, Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -11,6 +11,12 @@ const Login = () => {
   const [userName, setUserName] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const storedToken = Cookies.get('jwt');
+    if (storedToken) {
+      navigate('/'); 
+    }
+  }, [navigate]);
   const handleLogin = async () => {
     try {
       // Realizar la solicitud al servidor para autenticar al usuario

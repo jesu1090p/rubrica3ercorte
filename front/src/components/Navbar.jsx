@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Navbar, Nav, Container } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 const NavigationBar = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [name, setName] = useState('');
 
   const decodeToken = (token) => {
     try {
@@ -17,7 +17,9 @@ const NavigationBar = () => {
       return null;
     }
   };
+
   
+
   useEffect(() => {
     // Verificar si hay un token almacenado al cargar la página
     const storedToken = Cookies.get('jwt');
@@ -30,7 +32,7 @@ const NavigationBar = () => {
       // Esto puede variar según cómo estés manejando la autenticación
       const decodedToken = decodeToken(storedToken);
       if (decodedToken && decodedToken.usuario) {
-        setUserName(decodedToken.usuario);
+        setName(decodedToken.usuario);
       }
     }
   }, []);
@@ -39,14 +41,15 @@ const NavigationBar = () => {
     try {
       const response = await fetch('http://localhost:3000/logout', {
         method: 'POST',
-        credentials: 'include', 
+        credentials: 'include',
       });
 
       if (response.ok) {
         setIsAuthenticated(false);
-        setUserName('');
+        setName('');
         Cookies.remove('jwt');
-        navigate('/'); 
+        navigate('/');
+        
       } else {
         console.error('Error en la solicitud de logout');
       }
@@ -56,7 +59,7 @@ const NavigationBar = () => {
   };
 
   return (
-    <Navbar bg="light" variant="light" style={{fontFamily:'Sora'}} expand="lg">
+    <Navbar bg="light" variant="light" style={{ fontFamily: 'Sora' }} expand="lg">
       <Container>
         <Navbar.Brand as={Link} to="/">
           GestionARTE
@@ -66,18 +69,19 @@ const NavigationBar = () => {
           <Nav className="ml-auto">
             {!isAuthenticated && (
               <>
-                <Nav.Link as={Link} to="/login">
+                <Button className="mx-2" variant="outline-success" as={Link} to="/login">
                   Iniciar sesi&oacute;n
-                </Nav.Link>
-                <Nav.Link as={Link} to="/register">
-                  Registrarse
-                </Nav.Link>
+                </Button>
+                <Button variant='outline-info' as={Link} to="/register">
+                  Registrarme
+                </Button>
               </>
             )}
             {isAuthenticated && (
               <>
-                <Nav.Link disabled>{userName}</Nav.Link>
-                <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
+                <Nav.Link>Hola, {name}!</Nav.Link>
+                <Button onClick={handleLogout}>Cerrar Sesión</Button>
+                
               </>
             )}
           </Nav>

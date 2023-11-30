@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import AddModal from './modals/AddModal';
-import EditModal from './modals/EditModal';
-import DeleteModal from './modals/DeleteModal';
+import AddModal from './modals/AddModalProduct';
+import EditModal from './modals/EditModalProduct';
+import DeleteModal from './modals/DeleteModalProduct';
 import { Button, Table} from 'react-bootstrap'
 import { toast } from 'react-toastify';
 
@@ -218,7 +218,7 @@ const Product = () => {
                 <td>${product.precio}</td>
                 <td>{product.cantidad}</td>
                 <td>                   
-                    <Button className={`mx-2 ${isAuthenticated() ? "" : "disabled"}`} variant={isAuthenticated() ? "primary" : "secondary"} onClick={() => handleEditProduct(product)}>
+                    <Button className={`mx-2 ${isAuthenticated() ? "" : "disabled"}`} variant={isAuthenticated() ? "warning" : "secondary"} onClick={() => handleEditProduct(product)}>
                     Editar
                   </Button>
                   <Button  className="mx-2" variant={isAuthenticated() ? "danger" : "secondary"} onClick={() => handleDeleteProduct(product)}>
