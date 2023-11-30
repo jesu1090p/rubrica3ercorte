@@ -184,10 +184,12 @@ app.post('/register', async (req, res) => {
       // Lógica para verificar las credenciales en la base de datos
       const user = await getUserByCredentials(usuario, clave);
   
-      if (!user) {
-        // Credenciales incorrectas
-        return res.status(401).json({ error: 'Credenciales incorrectas.' });
+      // Verificar si la clave es correcta
+      if (!user || (user.clave !== clave) || (user.usuario !== usuario)) {
+        const errorType = !user ? 'Usuario no encontrado' : 'Contraseña incorrecta';
+        return res.status(401).json({ error: errorType });
       }
+  
   
       // Usuario autenticado, generar token JWT
       const token = generateToken(usuario);
@@ -205,11 +207,7 @@ app.post('/register', async (req, res) => {
 
   app.post('/logout', (req, res) => {
    
-    res.clearCookie('jwt');
-  
-   
-    localStorage.removeItem('jwt');
-  
+    res.clearCookie('jwt');  
     res.json({ message: 'Logout exitoso' });
   });
 

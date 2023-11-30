@@ -211,7 +211,7 @@ const Product = () => {
           </thead>
           <tbody>
             {products.map((product) => (
-              <tr key={product.id}>
+              <tr className='align-middle' key={product.id}>
                 <td>{product.id}</td>
                 <td>{product.nombre}</td>
                 <td>{product.descripcion}</td>

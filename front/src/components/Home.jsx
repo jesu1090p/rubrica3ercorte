@@ -16,24 +16,22 @@ const Home = () => {
   
       <div className="row align-items-md-stretch">
           <div className="col-md-6">
-            <div className="gradient-background-1 h-100 p-5 rounded-3">
+            <div className="gradient-background-1 p-5 rounded-3">
               <h2>Administrar Productos</h2>
               <p>Accede a la sección de administración de productos para agregar, editar o eliminar productos de la plataforma.</p>
-              <Link to="/products" className="btn btn-outline-dark" type="button">Ir a Productos</Link>
+              <Link to="/products" className="btn btn-outline-success" type="button">Ir a Productos</Link>
             </div>
           </div>
           <div className="col-md-6">
-            <div className="gradient-background-2 h-100 p-5 border rounded-3">
+            <div className="gradient-background-2 p-5 border rounded-3">
               <h2>Administrar Ventas</h2>
               <p>Explora la sección de administración de ventas para gestionar y realizar un seguimiento de las transacciones realizadas.</p>
-              <Link to="/sales" className="btn btn-dark" type="button"><span className='text-light'>Ir a Ventas</span></Link>
+              <Link to="/sales" className="btn btn-outline-success" type="button"><span className='text-light'>Ir a Ventas</span></Link>
             </div>
           </div>
         </div>
   
-      <footer className="pt-3 mt-4 text-body-secondary text-center border-top">
-        &copy; Jesus Oviedo | Desarrollo Web | Universidad de la Costa | 2023 2
-      </footer>
+      
     </div>
   </main>
     )
